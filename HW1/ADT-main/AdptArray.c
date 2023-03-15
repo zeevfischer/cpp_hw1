@@ -20,11 +20,10 @@ struct AdptArray_
 
 PAdptArray CreateAdptArray(COPY_FUNC copy, DEL_FUNC del, PRINT_FUNC print)
 {
-    PAdptArray arr = (PAdptArray)malloc(sizeof(PAdptArray));
-    arr->Array = (PElement*)malloc(sizeof(PElement));
-    
-    arr->len = 1;
-
+    PAdptArray arr = (PAdptArray)calloc(1,sizeof(struct AdptArray_));
+    arr->Array = (PElement*)calloc(0,sizeof(PElement));
+    // printf("%ld\n",sizeof((arr->Array)));
+    arr->len = 0;
     arr->copy = copy;
     arr->del = del;
     arr->print = print;
@@ -45,6 +44,7 @@ void DeleteAdptArray(PAdptArray arr)
             arr->del(arr->Array[i]);
         }
     }
+    free(arr->Array);
     //now we can free the struct
     free(arr);
 }
@@ -60,8 +60,8 @@ Result SetAdptArrayAt(PAdptArray arr, int location, PElement element)
     //the arr is to small
     else
     {
-        //creat a new array twice as big 
-        PElement *new_array = (PElement*)malloc(sizeof(PElement) * (location+1));
+        // //creat a new array 
+        PElement *new_array = (PElement*)calloc(location+1,sizeof(PElement));
         for(int i = 0;i <= arr->len-1;i++)
         {
             //now need for copy alll you need to do is set pointers to the old array
@@ -76,11 +76,14 @@ Result SetAdptArrayAt(PAdptArray arr, int location, PElement element)
             // //new deleat it from the old array
             // arr->del(arr->Array[i]);
         }
-        
         //free old array
-        free(arr->Array);
+        if(arr->Array != NULL)
+        {
+            free(arr->Array);
+        }
         //set new array
         arr->Array = new_array; 
+
         //set length
         arr->len = location+1;
         //set new object
@@ -96,12 +99,27 @@ PElement GetAdptArrayAt(PAdptArray arr, int location)
     {
         return NULL;
     }
-    arr->print(arr->Array[location]);
-    return arr->Array[location];
+    return arr->copy(arr->Array[location]);
 }
 int GetAdptArraySize(PAdptArray arr)
 {
-    int a = arr->len;
-    return a;
+    if(arr->Array == NULL || arr->len == 0)
+    {
+        return 1;
+    }
+    else
+    {
+        int a = arr->len;
+        return a;
+    }
 }
-// void PrintDB(PAdptArray)
+void PrintDB(PAdptArray arr)
+{
+    for (int i = 0; i < arr->len; i++)
+    {
+        if(arr->Array[i]!=NULL)
+        {
+            arr->print(arr->Array[i]);
+        }
+    }
+}
