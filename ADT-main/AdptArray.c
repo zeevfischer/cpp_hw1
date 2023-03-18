@@ -65,11 +65,17 @@ Result SetAdptArrayAt(PAdptArray arr, int location, PElement element)
     //lets check if the array is big enough
     if(arr->len-1 >= location)
     {
+        //free the element in the array if exists
+        if(arr->Array[location] != NULL)
+        {
+            arr->del(arr->Array[location]);
+        }
         PElement obj = arr->copy(element);
         arr->Array[location] = obj;
         return SUCCESS;
     }
     //the arr is to small
+    //if it is to small then obviesly arr->Array[location] == NULL
     else
     {
         // //creat a new array 
@@ -101,7 +107,7 @@ PElement GetAdptArrayAt(PAdptArray arr, int location)
     //check input velidety
     if(arr->Array[location] == NULL || location < 0)
     {
-        return FAIL;
+        return NULL;
     }
     return arr->copy(arr->Array[location]);
 }
@@ -110,7 +116,7 @@ int GetAdptArraySize(PAdptArray arr)
     //check input velidety
     if(arr->Array == NULL || arr->len == 0)
     {
-        return FAIL;
+        return 1;
     }
     else
     {
